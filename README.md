@@ -1,2 +1,2 @@
-# PowerQuery-M-
+# PowerQuery-M
 Useful Power Query Custom Functions
