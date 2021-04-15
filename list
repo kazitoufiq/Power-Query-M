@@ -1,0 +1,3 @@
+
+## To generate list starting from 2019 to 2027 with increment by 1 year
+List.Generate(() => 2019, each _ <= 2027, each _ + 1)
