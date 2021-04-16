@@ -17,7 +17,7 @@ https://www.youtube.com/watch?v=4FsFJPuN6Ro
 List.Accumulate(quarter_no_generator, #"Changed Type", (state, current) => Table.AddColumn(state, current, each [q]))
 
 
-# select columns based on list 
+# create columns list of another query
 
 let
     columnsname=Table.ColumnNames(#"63d12bd7-94db-4dc5" ),
@@ -27,5 +27,9 @@ let
 in
      Column1
      
-     
+ 
+# embed the a list (PWP_columns_selection - selected columns of another query) within step
+
+ #"Removed Other Columns" = Table.SelectColumns(#"63d12bd7-94db-4dc5-922d-6953335a0394",PWP_columns_selection)
+ 
      
