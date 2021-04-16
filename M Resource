@@ -32,4 +32,11 @@ in
 
  #"Removed Other Columns" = Table.SelectColumns(#"63d12bd7-94db-4dc5-922d-6953335a0394",PWP_columns_selection)
  
+ 
+# increment calc
+
+(classification, salary_column) => 
+if not(List.Contains({"EO1","EO2","EO3"},classification)) then salary_column * 1.0325
+else salary_column
+ 
      
