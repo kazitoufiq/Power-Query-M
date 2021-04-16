@@ -5,3 +5,8 @@ List.Generate(() => 2019, each _ <= 2027, each _ + 1)
 
 Create a Cartesian or Cross Join with Power Query
 https://www.youtube.com/watch?v=4FsFJPuN6Ro
+
+
+# Create columns based on list
+
+List.Accumulate(quarter_no_generator, #"Changed Type", (state, current) => Table.AddColumn(state, current, each [q]))
