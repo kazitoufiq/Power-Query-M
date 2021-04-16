@@ -15,3 +15,17 @@ https://www.youtube.com/watch?v=4FsFJPuN6Ro
 # Create columns based on list
 
 List.Accumulate(quarter_no_generator, #"Changed Type", (state, current) => Table.AddColumn(state, current, each [q]))
+
+
+# select columns based on list 
+
+let
+    columnsname=Table.ColumnNames(#"63d12bd7-94db-4dc5" ),
+    #"Converted to Table" = Table.FromList(columnsname, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+    #"Filtered Rows" = Table.SelectRows(#"Converted to Table", each ([Column1] <> "Actual Salary _x002d" and [Column1] <> "Actual VPS Classific" and [Column1] <> "AttachmentFiles" and [Column1] <> "Attachments" and [Column1] <> "Author" and [Column1] <> "AuthorId" and [Column1] <> "Branch FKID" and [Column1] <> "ComplianceAssetId" and [Column1] <> "ContentType" and [Column1] <> "ContentTypeId" and [Column1] <> "Created" and [Column1] <> "Director (email_x002" and [Column1] <> "Director FKID" and [Column1] <> "Division FKID" and [Column1] <> "Editor" and [Column1] <> "EditorId" and [Column1] <> "FieldValuesAsHtml" and [Column1] <> "FieldValuesAsText" and [Column1] <> "FieldValuesForEdit" and [Column1] <> "File" and [Column1] <> "FileSystemObjectType" and [Column1] <> "FirstUniqueAncestorSecurableObject" and [Column1] <> "Folder" and [Column1] <> "FTE" and [Column1] <> "GetDlpPolicyTip" and [Column1] <> "GUID" and [Column1] <> "ID" and [Column1] <> "Incumbent FKID" and [Column1] <> "LikedByInformation" and [Column1] <> "Modified" and [Column1] <> "OData__UIVersionString" and [Column1] <> "Package Director FKI" and [Column1] <> "Package Director _x0" and [Column1] <> "Package FKID" and [Column1] <> "ParentList" and [Column1] <> "People Delegation Ty" and [Column1] <> "Position Created Dat" and [Column1] <> "Position Last Modifi" and [Column1] <> "Position Parent FKID" and [Column1] <> "Properties" and [Column1] <> "Report To -_x0" and [Column1] <> "Reports To -_x" and [Column1] <> "Reports To -_x0" and [Column1] <> "RoleAssignments" and [Column1] <> "Secondary Reports To" and [Column1] <> "Secondary Reports To0" and [Column1] <> "Secondary Reports To1" and [Column1] <> "ServerRedirectedEmbedUri" and [Column1] <> "ServerRedirectedEmbedUrl" and [Column1] <> "Title" and [Column1] <> "Unit FKID" and [Column1] <> "Versions" and [Column1] <> "WFP History")),
+    Column1 = #"Filtered Rows"[Column1]
+in
+     Column1
+     
+     
+     
