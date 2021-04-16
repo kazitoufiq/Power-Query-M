@@ -7,6 +7,11 @@ Create a Cartesian or Cross Join with Power Query
 https://www.youtube.com/watch?v=4FsFJPuN6Ro
 
 
+# create table with 5 columns and values from 1 to 5 
+
+#table(5,{{1..5}})
+
+
 # Create columns based on list
 
 List.Accumulate(quarter_no_generator, #"Changed Type", (state, current) => Table.AddColumn(state, current, each [q]))
