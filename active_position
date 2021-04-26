@@ -1,0 +1,24 @@
+let
+    Source = Base_Position,
+    #"Removed Other Columns" = Table.SelectColumns(Source,{"Id", "Position From", "Position To"}),
+    #"Calculated Start of Month" = Table.TransformColumns(#"Removed Other Columns",{{"Position From", Date.StartOfMonth, type date}, {"Position To", Date.StartOfMonth, type date}}),
+    #"Duplicated Column" = Table.DuplicateColumn(#"Calculated Start of Month", "Position From", "Position From - Copy"),
+    #"Duplicated Column1" = Table.DuplicateColumn(#"Duplicated Column", "Position To", "Position To - Copy"),
+    #"Renamed Columns" = Table.RenameColumns(#"Duplicated Column1",{{"Position From - Copy", "From"}, {"Position To - Copy", "To"}}),
+    #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns",{{"From", Int64.Type}, {"To", Int64.Type}}),
+    #"Changed Type1" = Table.TransformColumnTypes(#"Changed Type",{{"From", type number}, {"To", type number}}),
+    #"Added Custom" = Table.AddColumn(#"Changed Type1", "Custom", each {[From]..[To]}),
+    #"Expanded Custom" = Table.ExpandListColumn(#"Added Custom", "Custom"),
+    #"Changed Type2" = Table.TransformColumnTypes(#"Expanded Custom",{{"Custom", type date}}),
+    #"Renamed Columns1" = Table.RenameColumns(#"Changed Type2",{{"Custom", "Date_Seq"}}),
+    #"Calculated Start of Month1" = Table.TransformColumns(#"Renamed Columns1",{{"Date_Seq", Date.StartOfMonth, type date}}),
+    #"Removed Columns" = Table.RemoveColumns(#"Calculated Start of Month1",{"From", "To"}),
+    #"Removed Duplicates" = Table.Distinct(#"Removed Columns"),
+    #"Renamed Columns2" = Table.RenameColumns(#"Removed Duplicates",{{"Date_Seq", "Position_Active_Month"}}),
+    #"Inserted Start of Quarter" = Table.AddColumn(#"Renamed Columns2", "Start of Quarter", each Date.StartOfQuarter([Position_Active_Month]), type date),
+    #"Removed Columns1" = Table.RemoveColumns(#"Inserted Start of Quarter",{"Start of Quarter"}),
+    #"Duplicated Column2" = Table.DuplicateColumn(#"Removed Columns1", "Position_Active_Month", "Position_Active_Month - Copy"),
+    #"Calculated Quarter" = Table.TransformColumns(#"Duplicated Column2",{{"Position_Active_Month - Copy", Date.QuarterOfYear, Int64.Type}}),
+    #"Renamed Columns3" = Table.RenameColumns(#"Calculated Quarter",{{"Position_Active_Month - Copy", "Quarter"}})
+in
+    #"Renamed Columns3"
