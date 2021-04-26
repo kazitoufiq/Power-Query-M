@@ -1,0 +1,11 @@
+
+SWITCH with string : 
+
+SWITCH(
+    TRUE(),
+    CONTAINSSTRING(EmployeeDirectory[Employee Type], "VPS"), "VPS Employees", 
+    CONTAINSSTRING(EmployeeDirectory[Employee Type], "Exec"), "VPS Employees",
+    EmployeeDirectory[Employee Type]
+)
+
+
