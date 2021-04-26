@@ -1,0 +1,131 @@
+let
+    Source = Base_Position,
+    #"Removed Other Columns" = Table.SelectColumns(Source,{"Id", "Position From", "Position To"}),
+    #"Calculated Start of Month" = Table.TransformColumns(#"Removed Other Columns",{{"Position From", Date.StartOfMonth, type date}, {"Position To", Date.StartOfMonth, type date}}),
+    #"Duplicated Column" = Table.DuplicateColumn(#"Calculated Start of Month", "Position From", "Position From - Copy"),
+    #"Duplicated Column1" = Table.DuplicateColumn(#"Duplicated Column", "Position To", "Position To - Copy"),
+    #"Renamed Columns" = Table.RenameColumns(#"Duplicated Column1",{{"Position From - Copy", "From"}, {"Position To - Copy", "To"}}),
+    #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns",{{"From", Int64.Type}, {"To", Int64.Type}}),
+    #"Changed Type1" = Table.TransformColumnTypes(#"Changed Type",{{"From", type number}, {"To", type number}}),
+    #"Added Custom" = Table.AddColumn(#"Changed Type1", "Custom", each {[From]..[To]}),
+    #"Expanded Custom" = Table.ExpandListColumn(#"Added Custom", "Custom"),
+    #"Changed Type2" = Table.TransformColumnTypes(#"Expanded Custom",{{"Custom", type date}}),
+    #"Renamed Columns1" = Table.RenameColumns(#"Changed Type2",{{"Custom", "Date_Seq"}}),
+    #"Calculated Start of Month1" = Table.TransformColumns(#"Renamed Columns1",{{"Date_Seq", Date.StartOfMonth, type date}}),
+    #"Removed Columns" = Table.RemoveColumns(#"Calculated Start of Month1",{"From", "To"}),
+    #"Removed Duplicates" = Table.Distinct(#"Removed Columns"),
+    #"Renamed Columns2" = Table.RenameColumns(#"Removed Duplicates",{{"Date_Seq", "Position_Active_Month"}}),
+    #"Inserted Start of Quarter" = Table.AddColumn(#"Renamed Columns2", "Start of Quarter", each Date.StartOfQuarter([Position_Active_Month]), type date),
+    #"Removed Columns1" = Table.RemoveColumns(#"Inserted Start of Quarter",{"Start of Quarter"}),
+    #"Duplicated Column2" = Table.DuplicateColumn(#"Removed Columns1", "Position_Active_Month", "Position_Active_Month - Copy"),
+    #"Calculated Quarter" = Table.TransformColumns(#"Duplicated Column2",{{"Position_Active_Month - Copy", Date.QuarterOfYear, Int64.Type}}),
+    #"Renamed Columns3" = Table.RenameColumns(#"Calculated Quarter",{{"Position_Active_Month - Copy", "Quarter"}}),
+    #"Merged Queries" = Table.NestedJoin(#"Renamed Columns3", {"Id"}, Base_Position, {"Id"}, "Base_Position", JoinKind.LeftOuter),
+    #"Expanded Base_Position1" = Table.ExpandTableColumn(#"Merged Queries", "Base_Position", {"Position#", "Classification"}, {"Base_Position.Position#", "Base_Position.Classification"}),
+    #"Merged Queries1" = Table.NestedJoin(#"Expanded Base_Position1", {"Base_Position.Classification"}, Annual_Salary, {"Classification"}, "Annual_Salary", JoinKind.LeftOuter),
+    #"Expanded Annual_Salary" = Table.ExpandTableColumn(#"Merged Queries1", "Annual_Salary", {"Annual Salary  2019-20", "Annual Salary 2020-21", "Annual Salary 2021-22", "Annual Salary 2022-23", "Annual Salary 2023-24", "Annual Salary 2024-25", "Annual Salary 2025-26", "Annual Salary 2026-27"}, {"Annual Salary  2019-20", "Annual Salary 2020-21", "Annual Salary 2021-22", "Annual Salary 2022-23", "Annual Salary 2023-24", "Annual Salary 2024-25", "Annual Salary 2025-26", "Annual Salary 2026-27"}),
+    #"Duplicated Column3" = Table.DuplicateColumn(#"Expanded Annual_Salary", "Position_Active_Month", "Position_Active_Month - Copy"),
+    #"Reordered Columns" = Table.ReorderColumns(#"Duplicated Column3",{"Id", "Position From", "Position To", "Position_Active_Month", "Quarter", "Position_Active_Month - Copy", "Base_Position.Position#", "Base_Position.Classification", "Annual Salary  2019-20", "Annual Salary 2020-21", "Annual Salary 2021-22", "Annual Salary 2022-23", "Annual Salary 2023-24", "Annual Salary 2024-25", "Annual Salary 2025-26", "Annual Salary 2026-27"}),
+    #"Extracted Year" = Table.TransformColumns(#"Reordered Columns",{{"Position_Active_Month - Copy", Date.Year, Int64.Type}}),
+    #"Renamed Columns4" = Table.RenameColumns(#"Extracted Year",{{"Position_Active_Month - Copy", "Year"}}),
+    #"Added Custom1" = Table.AddColumn(#"Renamed Columns4", "Custom", each 
+    
+    
+    if List.Contains({3,4},[Quarter]) and [Year]=2020 then 
+    
+        if not List.Contains({"EO1","EO2","EO3"},[Base_Position.Classification]) then 
+                     ([#"Annual Salary 2020-21"]/12) * (1+#"LoadingFactor-non-EOs")
+                     else ([#"Annual Salary 2020-21"]/12) * (1+#"LoadingFactor-EOs")
+
+
+    else if List.Contains({1,2},[Quarter]) and [Year]=2021 then 
+        if not List.Contains({"EO1","EO2","EO3"},[Base_Position.Classification]) then 
+                     ([#"Annual Salary 2020-21"]/12) * (1+#"LoadingFactor-non-EOs")
+                     else ([#"Annual Salary 2020-21"]/12) * (1+#"LoadingFactor-EOs")
+       
+
+    else if List.Contains({3,4},[Quarter]) and [Year]=2021 then 
+        if not List.Contains({"EO1","EO2","EO3"},[Base_Position.Classification]) then 
+                     ([#"Annual Salary 2021-22"]/12) * (1+#"LoadingFactor-non-EOs")
+                     else ([#"Annual Salary 2021-22"]/12) * (1+#"LoadingFactor-EOs")   
+    
+
+    else if List.Contains({1,2},[Quarter]) and [Year]=2022 then 
+        if not List.Contains({"EO1","EO2","EO3"},[Base_Position.Classification]) then 
+                     ([#"Annual Salary 2021-22"]/12) * (1+#"LoadingFactor-non-EOs")
+                     else ([#"Annual Salary 2021-22"]/12) * (1+#"LoadingFactor-EOs") 
+
+          
+
+    else if List.Contains({3,4},[Quarter]) and [Year]=2022 then 
+        if not List.Contains({"EO1","EO2","EO3"},[Base_Position.Classification]) then 
+                     ([#"Annual Salary 2022-23"]/12) * (1+#"LoadingFactor-non-EOs")
+                     else ([#"Annual Salary 2022-23"]/12) * (1+#"LoadingFactor-EOs") 
+
+
+    else if List.Contains({1,2},[Quarter]) and [Year]=2023 then 
+        if not List.Contains({"EO1","EO2","EO3"},[Base_Position.Classification]) then 
+                     ([#"Annual Salary 2022-23"]/12) * (1+#"LoadingFactor-non-EOs")
+                     else ([#"Annual Salary 2022-23"]/12) * (1+#"LoadingFactor-EOs") 
+                 
+
+
+    else if List.Contains({3,4},[Quarter]) and [Year]=2023 then 
+        if not List.Contains({"EO1","EO2","EO3"},[Base_Position.Classification]) then 
+                     ([#"Annual Salary 2023-24"]/12) * (1+#"LoadingFactor-non-EOs")
+                     else ([#"Annual Salary 2023-24"]/12) * (1+#"LoadingFactor-EOs") 
+
+    else if List.Contains({1,2},[Quarter]) and [Year]=2024 then 
+        if not List.Contains({"EO1","EO2","EO3"},[Base_Position.Classification]) then 
+                     ([#"Annual Salary 2023-24"]/12) * (1+#"LoadingFactor-non-EOs")
+                     else ([#"Annual Salary 2023-24"]/12) * (1+#"LoadingFactor-EOs") 
+
+
+
+
+    else if List.Contains({3,4},[Quarter]) and [Year]=2024 then 
+        if not List.Contains({"EO1","EO2","EO3"},[Base_Position.Classification]) then 
+                     ([#"Annual Salary 2024-25"]/12) * (1+#"LoadingFactor-non-EOs")
+                     else ([#"Annual Salary 2024-25"]/12) * (1+#"LoadingFactor-EOs") 
+
+
+    else if List.Contains({1,2},[Quarter]) and [Year]=2025 then 
+        if not List.Contains({"EO1","EO2","EO3"},[Base_Position.Classification]) then 
+                     ([#"Annual Salary 2024-25"]/12) * (1+#"LoadingFactor-non-EOs")
+                     else ([#"Annual Salary 2024-25"]/12) * (1+#"LoadingFactor-EOs")                  
+
+
+
+
+    else if List.Contains({3,4},[Quarter]) and [Year]=2025 then 
+        if not List.Contains({"EO1","EO2","EO3"},[Base_Position.Classification]) then 
+                     ([#"Annual Salary 2025-26"]/12) * (1+#"LoadingFactor-non-EOs")
+                     else ([#"Annual Salary 2025-26"]/12) * (1+#"LoadingFactor-EOs") 
+
+
+    else if List.Contains({1,2},[Quarter]) and [Year]=2026 then 
+        if not List.Contains({"EO1","EO2","EO3"},[Base_Position.Classification]) then 
+                     ([#"Annual Salary 2025-26"]/12) * (1+#"LoadingFactor-non-EOs")
+                     else ([#"Annual Salary 2025-26"]/12) * (1+#"LoadingFactor-EOs") 
+
+
+
+
+    else if List.Contains({3,4},[Quarter]) and [Year]=2026 then 
+        if not List.Contains({"EO1","EO2","EO3"},[Base_Position.Classification]) then 
+                     ([#"Annual Salary 2026-27"]/12) * (1+#"LoadingFactor-non-EOs")
+                     else ([#"Annual Salary 2026-27"]/12) * (1+#"LoadingFactor-EOs") 
+
+
+    else if List.Contains({1,2},[Quarter]) and [Year]=2027 then 
+        if not List.Contains({"EO1","EO2","EO3"},[Base_Position.Classification]) then 
+                     ([#"Annual Salary 2026-27"]/12) * (1+#"LoadingFactor-non-EOs")
+                     else ([#"Annual Salary 2026-27"]/12) * (1+#"LoadingFactor-EOs")                  
+
+    
+    else -1),
+    #"Changed Type3" = Table.TransformColumnTypes(#"Added Custom1",{{"Custom", Currency.Type}}),
+    #"Reordered Columns1" = Table.ReorderColumns(#"Changed Type3",{"Id", "Position From", "Position To", "Position_Active_Month", "Custom", "Quarter", "Year", "Base_Position.Position#", "Base_Position.Classification", "Annual Salary  2019-20", "Annual Salary 2020-21", "Annual Salary 2021-22", "Annual Salary 2022-23", "Annual Salary 2023-24", "Annual Salary 2024-25", "Annual Salary 2025-26", "Annual Salary 2026-27"}),
+    #"Renamed Columns5" = Table.RenameColumns(#"Reordered Columns1",{{"Custom", "Forecast Cost"}})
+in
+    #"Renamed Columns5"
