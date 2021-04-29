@@ -9,3 +9,9 @@ SWITCH(
 )
 
 
+
+# GRPUP BY - 
+
+Cnt by combination = 
+GROUPBY(Bank, Bank[Branch], Bank[Division], 
+        "Cnt", COUNTAX( CURRENTGROUP(), Bank[Branch]))
