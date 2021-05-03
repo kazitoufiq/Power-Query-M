@@ -39,4 +39,7 @@ in
 if not(List.Contains({"EO1","EO2","EO3"},classification)) then salary_column * 1.0325
 else salary_column
  
-     
+# list of months between two dates 
+
+(StartDate as date, EndDate as date) => 
+List.Generate(()=>StartDate,   each _ <= EndDate, each Date.AddMonths(_, 1))
